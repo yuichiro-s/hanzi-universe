@@ -1,0 +1,47 @@
+.tone1 {
+  background-color: lightcoral
+}
+
+.tone2 {
+  background-color: lightsalmon;
+}
+
+.tone3 {
+  background-color: lightgreen;
+}
+
+.tone4 {
+  background-color: lightblue;
+}
+
+.tone5 {
+  background-color: lightgray;
+}
+
+.category-SSS {
+  color: red;
+}
+
+.category-SS {
+  color: darkorange;
+}
+
+.category-S {
+  color: green;
+}
+
+.category-A {
+  color: blue;
+}
+
+.category-B {
+  color: blueviolet;
+}
+
+.category-C {
+  color: indigo;
+}
+
+.category-D {
+  color: gray;
+}

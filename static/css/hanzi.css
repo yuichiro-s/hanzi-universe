@@ -1,0 +1,84 @@
+#simplified {
+  margin: 0px;
+  font-size: 72px;
+}
+
+#traditional {
+  margin: 0px;
+  font-size: 72px;
+}
+
+.definition-item {
+  font-size: 24px;
+  background-color: #ddd;
+  margin-left: 4px;
+  padding-left: 2px;
+  padding-right: 2px;
+}
+
+.char {
+  font-size: 48px;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.word {
+  white-space: nowrap;
+  font-size: 24px;
+  margin: 0px;
+}
+
+.word-word {
+  font-size: 24px;
+}
+
+.word-pron span {
+  font-style: italic;
+  font-size: medium;
+  padding-left: 3px;
+}
+
+.word-def-item {
+  white-space: nowrap;
+  font-size: 18px;
+  background-color: #ddd;
+  margin-left: 4px;
+  padding-left: 2px;
+  padding-right: 2px;
+}
+
+sub {
+  font-size: small;
+}
+
+.pron {
+  font-size: 36px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.match {
+  text-decoration: underline;
+}
+
+.first-column {
+  background-color: #222;
+  color: white;
+}
+
+#exact-row {
+  background-color: lightyellow;
+}
+
+td {
+  border-bottom: black 1px solid;
+  border-top: black 1px solid;
+  margin: 0px;
+}

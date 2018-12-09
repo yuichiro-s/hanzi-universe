@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>{{ obj.hanzi }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/colors.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hanzi.css') }}">
+  </head>
+  <body>
+
+    <a href="../frequency">[Frequency list]</a>
+
+    <div id="highlighter-lang-specifier" data-lang="ChineseHanzi"></div>
+
+    <div>
+      <span id="simplified" class="category-{{ obj.category }}">{{ obj.hanzi }}</span>
+      {% if obj.hanzi != obj.traditional %}
+      <span id="traditional" class="category-{{ obj.category }}">({{ obj.traditional }})</span>
+      {% endif %}
+      <span id="main-rank" class="category-{{ obj.category }}">{{ obj.rank }}</span>
+      <a href="https://www.google.com/search?tbm=isch&q={{obj.hanzi}}">[Image]</a>
+    </div>
+
+    {% for entry in obj.entries %}
+
+    <div>
+      <div style="white-space:nowrap">
+        <a href="../pinyin/{{ entry.pinyin[1] }}"><span class="pron tone{{entry.pinyin[2]}}">{{ entry.pinyin[0] }}</span></a>
+        {% for d in entry.defs %}
+        <span class="definition-item">{{ d }}</span>
+        {% endfor %}
+      </div>
+
+      <table>
+        {% if entry.related1 %}
+        <tr id="exact-row">
+          <td class="first-column">Exact</td>
+          <td>
+            {% for h in entry.related1 %}
+            <span class="char category-{{h.category}}">
+              <a href="{{h.hanzi}}">{{ h.hanzi }}</a><sub>{{ h.rank }}</sub>
+            </span>
+            {% endfor %}
+          </td>
+        </tr>
+        {% endif %}
+
+        {% if entry.related2 %}
+        <tr>
+          <td class="first-column">Variants</td>
+          <td>
+            {% for h in entry.related2 %}
+            <div>
+
+              <a href="../pinyin/{{ h.pinyin[1] }}"><span class="pron tone{{h.pinyin[2]}}">{{h.pinyin[0]}}</span></a>
+              {% for h2 in h.list %}
+              <span class="char category-{{h2.category}}">
+                <a href="{{h2.hanzi}}">{{ h2.hanzi }}</a><sub>{{ h2.rank }}</sub></span>
+              {% endfor %}
+            </div>
+            {% endfor %}
+          </td>
+        </tr>
+        {% endif %}
+
+        {% if entry.words %}
+        <tr>
+          <td class="first-column">Words</td>
+          <td>
+            {% for w in entry.words %}
+            <div class="word">
+              <span class="word-hanzi">
+                {% for match, c, cat in w[0] %}<a href="{% if cat != 'D' %}{{ c }}{% else %}#{% endif %}" class="category-{{cat}}{% if c == obj.hanzi %} match{% endif %}">{{ c }}</a>{% endfor %}
+              </span>
+              <span class="word-pron">{% for a in w[1] %}<span>{{ a[0] }}</span>{% endfor %}</span>
+              <span class="word-def">{% for d in w[2] %}<span class="word-def-item">{{ d }}</span>{% endfor %}</span>
+            </div>
+            {% endfor %}
+          </td>
+        </tr>
+        {% endif %}
+
+        {% if entry.same %}
+        <tr>
+          <td class="first-column">Same</td>
+          <td>
+            {% for h in entry.same %}
+            <span class="char category-{{h.category}}"><a href="{{h.hanzi}}">{{ h.hanzi }}</a><sub>{{ h.rank }}</sub></span>
+            {% endfor %}
+          </td>
+        </tr>
+        {% endif %}
+      </table>
+
+    </div>
+
+    {% endfor %}
+  </body>
+</html>

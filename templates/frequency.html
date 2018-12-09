@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Frequency List</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/colors.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/freq.css') }}">
+</head>
+<body>
+<div id="highlighter-lang-specifier" data-lang="ChineseHanzi"></div>
+
+<table>
+    {% for row in rows %}
+    <tr>
+    {% for hanzi, rank, category in row %}
+        <td>
+            <a class="hanzi category-{{category}}" href="hanzi/{{hanzi}}">{{hanzi}}</a>
+            <p class="rank">{{rank}}</p>
+        </td>
+    {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>

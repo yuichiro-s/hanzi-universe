@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ obj.pinyin }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/colors.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hanzi.css') }}">
+</head>
+<body>
+<div id="highlighter-lang-specifier" data-lang="ChineseHanzi"></div>
+<a href="../frequency">[Frequency list]</a>
+
+<table>
+    {% for tone in obj.tones %}
+    <tr>
+        <td class="first-column">{{ tone.pinyin }}</td>
+        <td>
+            {% for char, rank, category in tone.chars %}
+            <span class="char category-{{category}}">
+              <a href="../hanzi/{{ char }}">{{ char }}</a><sub>{{ rank }}</sub>
+            </span>
+            {% endfor %}
+            <span class="char">&nbsp;</span>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+</body>
+</html>
