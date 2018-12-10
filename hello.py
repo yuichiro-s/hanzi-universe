@@ -1,39 +1,38 @@
 from flask import Flask, render_template, request
 
-from hanzi_universe.hanzi import lookup, lookup_pinyin, get_category, ranks, MAX_RANK
+from hanzi_universe.hanzi import lookup, lookup_pinyin, get_category, ranks, INF
 from hanzi_universe.pinyin import decode_pinyin
 
 import random
 
 app = Flask(__name__)
 
-
-@app.route('/')
-def index():
-    return 'index'
-
-
 @app.route('/hanzi/<string:hanzi>')
 def get_hanzi(hanzi):
-    data = lookup(hanzi)
+    max_rank = request.args.get('max_rank', 3000)
+    data = lookup(hanzi, max_rank)
     obj = prepare(data)
     return render_template('hanzi.html', obj=obj)
 
 
 @app.route('/pinyin/<string:pinyin>')
 def get_pinyin(pinyin):
-    obj = lookup_pinyin(pinyin)
+    max_rank = request.args.get('max_rank', 3000)
+    obj = lookup_pinyin(pinyin, max_rank)
     return render_template('pinyin.html', obj=obj)
 
 
 @app.route('/frequency')
 def show_frequency_list():
-    lst = sorted(ranks.items(), key=lambda kv: kv[1])[:MAX_RANK]
+    lst = sorted(ranks.items(), key=lambda kv: kv[1] or INF)
     if not request.args.get('sort'):
         random.shuffle(lst)
+    max_rank = request.args.get('max_rank', 3000)
     rows = []
     row = []
     for hanzi, rank in lst:
+        if not rank or rank > max_rank:
+            continue
         category = get_category(rank)
         row.append((hanzi, rank, category))
         if len(row) == 20:

@@ -9,19 +9,18 @@ cedict, pron_to_hanzi, traditional_to_simple, simple_to_traditional, hanzi_to_wo
     'data/cedict_ts.u8', word_freqs)
 hanzi_to_parts, part_to_hanzi = load_ids('data/cjkvi-ids/ids.txt', cedict)
 
-MAX_RANK = 2000
-
+INF = float('inf')
 
 def zip_with_frequency(words, f, reverse=False):
     return sorted(
-        map(lambda w: (w, f[w]), words), key=lambda kv: kv[1], reverse=reverse)
+        map(lambda w: (w, f[w]), words), key=lambda kv: kv[1] or INF, reverse=reverse)
 
 
-def list_hanzi_with_pronuncitation(pron):
+def list_hanzi_with_pronuncitation(pron, max_rank):
     hanzi = pron_to_hanzi[pron]
     results = []
     for w, rank in zip_with_frequency(hanzi, ranks):
-        if rank <= MAX_RANK:
+        if rank and rank <= max_rank:
             results.append((w, rank))
     return results
 
@@ -61,7 +60,7 @@ def normalize(pron):
     return pron
 
 
-def get_related_hanzi(hanzi, pron):
+def get_related_hanzi(hanzi, pron, max_rank):
     s = part_to_hanzi[hanzi]
     if hanzi in hanzi_to_parts:
         parts = hanzi_to_parts[hanzi]
@@ -77,29 +76,29 @@ def get_related_hanzi(hanzi, pron):
         for pron2, _ in cedict[hanzi2]:
             pron2 = pron2[0]
             rank2 = ranks[hanzi2]
-            if rank2 <= MAX_RANK:
+            if rank2 and rank2 <= max_rank:
                 if pron == pron2:
                     level1.append((hanzi2, rank2))
                 elif normalize(pron[:-1]) == normalize(pron2[:-1]):
                     level2[pron2].append((hanzi2, rank2))
 
-    level1.sort(key=lambda e: e[1])
-
+    level1.sort(key=lambda e: e[1] or INF)
+ 
     level2_list = []
     for pron2, hs in sorted(level2.items()):
-        level2_list.append((pron2, sorted(hs, key=lambda e: e[1])))
+        level2_list.append((pron2, sorted(hs, key=lambda e: e[1] or INF)))
 
     return level1, level2_list
 
 
-def lookup(hanzi):
+def lookup(hanzi, max_rank):
     rank = ranks[hanzi]
 
     entries = []
     for pron, defs in cedict[hanzi]:
         pron = pron[0]
-        same = exclude(list_hanzi_with_pronuncitation(pron), hanzi)
-        l1, l2 = get_related_hanzi(hanzi, pron)
+        same = exclude(list_hanzi_with_pronuncitation(pron, max_rank), hanzi)
+        l1, l2 = get_related_hanzi(hanzi, pron, max_rank)
         words = get_words(hanzi, pron)
         entries.append({
             'pron': pron,
@@ -123,15 +122,14 @@ def lookup(hanzi):
     }
 
 
-def lookup_pinyin(pinyin):
+def lookup_pinyin(pinyin, max_rank):
     tones = []
     for tone in range(1, 5):
         p = pinyin + str(tone)
         p_str = decode_pinyin(p)
         chars = []
-        for c, rank in list_hanzi_with_pronuncitation(p):
-            if rank <= MAX_RANK:
-                chars.append((c, rank, get_category(rank)))
+        for c, rank in list_hanzi_with_pronuncitation(p, max_rank):
+            chars.append((c, rank, get_category(rank)))
         tones.append({
             'pinyin': p_str,
             'chars': chars,

@@ -109,8 +109,7 @@ def load_frequency(path):
 
 
 def load_frequency_char(path):
-    INF = 10000000
-    ranks = defaultdict(lambda: INF)
+    ranks = defaultdict(lambda: None)
     with open(path) as f:
         for i, line in enumerate(f):
             rank = i + 1
