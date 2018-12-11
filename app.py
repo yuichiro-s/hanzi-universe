@@ -45,7 +45,8 @@ def user_answer_api():
     res = request.get_json()
     question = res.get('question')
     answer = res.get('answer')
-    user_answer(question, answer)
+    correct = res.get('correct')
+    user_answer(question, answer, correct)
     return make_json_response('ok')
 
 

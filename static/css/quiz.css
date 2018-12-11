@@ -7,3 +7,11 @@
     font-size: 72px;
     text-align: center;
 }
+
+.result-ok {
+    background-color: lightgreen;
+}
+
+.result-ng {
+    background-color: lightpink;
+}
