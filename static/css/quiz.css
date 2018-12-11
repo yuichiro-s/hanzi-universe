@@ -8,10 +8,39 @@
     text-align: center;
 }
 
+#pinyin a {
+    margin: 7px;
+}
+
+#defs {
+    text-align: center;
+}
+
+.def-item {
+    background-color: #333;
+    color: #fff;
+    font-size: 48px;
+    margin-left: 10px;
+    border: 1px solid black;
+}
+
 .result-ok {
-    background-color: lightgreen;
+    background-color: #bbffbb;
 }
 
 .result-ng {
-    background-color: lightpink;
+    background-color: #ffd6e1;
+}
+
+sub {
+    font-size: small;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+a:hover {
+    text-decoration: underline;
 }

@@ -1,29 +1,27 @@
-let question = '';
+let currentQuestion: {
+    key: [string, string],
+    question: string,
+    answer: string[],
+    pinyin: string[],
+    pinyinOrig: string[],
+    defs: string[],
+} = null;
 let userInput = [];
-let correctAnswer = [];
 
 const CLASS_OK = 'result-ok';
 const CLASS_NG = 'result-ng';
 
-function getElementPinyin() {
-    return document.getElementById('pinyin');
-}
-
-function getElementHanzi() {
-    return document.getElementById('hanzi');
-}
-
 async function checkAnswer() {
-    getElementPinyin().hidden = false;
-    if (JSON.stringify(userInput) === JSON.stringify(correctAnswer)) {
+    document.getElementById('pinyin').hidden = false;
+    document.getElementById('defs').hidden = false;
+    if (JSON.stringify(userInput) === JSON.stringify(currentQuestion.answer)) {
         document.body.classList.add(CLASS_OK);
     } else {
         document.body.classList.add(CLASS_NG);
     }
     let obj = {
-        'question': question,
+        'question': currentQuestion,
         'answer': userInput,
-        'correct': correctAnswer,
     };
     return fetch('user_answer',
         {
@@ -37,7 +35,7 @@ async function checkAnswer() {
 }
 
 function isDone() {
-    return userInput.length >= correctAnswer.length;
+    return userInput.length >= currentQuestion.answer.length;
 }
 
 function keyPressed(keyName: string) {
@@ -47,10 +45,11 @@ function keyPressed(keyName: string) {
         keyName === '3' ||
         keyName === '4' ||
         keyName === '5') {
-        let num = Number.parseInt(keyName);
-        userInput.push(num);
-        if (isDone()) {
-            checkAnswer();
+        if (!isDone()) {
+            userInput.push(keyName);
+            if (isDone()) {
+                checkAnswer();
+            }
         }
     } else if (keyName === ' ') {
         if (isDone()) {
@@ -61,18 +60,48 @@ function keyPressed(keyName: string) {
 
 async function nextQuestion() {
     let res = await fetch('get_next_question');
-    let {question, answer, pinyin} = await res.json();
+    currentQuestion = await res.json();
+    console.log(currentQuestion);
 
-    getElementHanzi().textContent = question;
-    let ePinyin = getElementPinyin();
-    ePinyin.textContent = pinyin;
-    ePinyin.hidden = true;
     document.body.classList.remove(CLASS_OK, CLASS_NG);
 
-    console.log(question, answer, pinyin);
+    let eHanzi = document.getElementById('hanzi');
+    eHanzi.innerHTML = '';
+    for (let [c, rank] of currentQuestion.question) {
+        let e = document.createElement('a');
+        e.setAttribute('href', 'hanzi/' + c);
+        e.innerText = c;
+        e.classList.add('hanzi');
+        eHanzi.appendChild(e);
+        let eSub = document.createElement('sub');
+        eSub.innerText = rank;
+        eHanzi.appendChild(eSub);
+    }
+    let ePinyin = document.getElementById('pinyin');
+    ePinyin.innerHTML = '';
+    for (let i = 0; i < currentQuestion.answer.length; i++) {
+        let t = currentQuestion.answer[i];
+        let p = currentQuestion.pinyin[i];
+        let pOrig = currentQuestion.pinyinOrig[i];
+        let e = document.createElement('a');
+        e.setAttribute('href', 'pinyin/' + pOrig);
+        e.innerText = p;
+        e.classList.add('tone' + t);
+        ePinyin.appendChild(e);
+    }
+    ePinyin.hidden = true;
+
+    let eDefs = document.getElementById('defs');
+    eDefs.innerHTML = '';
+    for (let def of currentQuestion.defs) {
+        let c = document.createElement('span');
+        c.innerText = def;
+        c.classList.add('def-item');
+        eDefs.appendChild(c);
+    }
+    eDefs.hidden = true;
 
     userInput = [];
-    correctAnswer = answer;
 }
 
 async function init() {

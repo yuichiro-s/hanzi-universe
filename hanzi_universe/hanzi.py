@@ -96,7 +96,7 @@ def get_related_hanzi(hanzi, pron, max_rank):
     return level1, level2_list
 
 
-def lookup(hanzi, max_rank):
+def lookup(hanzi, max_rank=INF):
     rank = ranks[hanzi]
 
     entries = []
