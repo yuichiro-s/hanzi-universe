@@ -1,11 +1,13 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, json
 
 from hanzi_universe.hanzi import lookup, lookup_pinyin, get_category, ranks, INF
 from hanzi_universe.pinyin import decode_pinyin
+from hanzi_universe.quiz import get_next_question, user_answer
 
 import random
 
 app = Flask(__name__)
+
 
 @app.route('/hanzi/<string:hanzi>')
 def get_hanzi(hanzi):
@@ -25,6 +27,26 @@ def get_pinyin(pinyin):
 @app.route('/quiz')
 def quiz():
     return render_template('quiz.html')
+
+
+def make_json_response(data):
+    return app.response_class(
+        response=json.dumps(data), status=200, mimetype='application/json')
+
+
+@app.route('/get_next_question')
+def get_next_question_api():
+    data = get_next_question()
+    return make_json_response(data)
+
+
+@app.route('/user_answer', methods=['POST'])
+def user_answer_api():
+    res = request.get_json()
+    question = res.get('question')
+    answer = res.get('answer')
+    user_answer(question, answer)
+    return make_json_response('ok')
 
 
 @app.route('/frequency')
