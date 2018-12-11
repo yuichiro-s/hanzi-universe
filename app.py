@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, json
+from flask_sqlalchemy import SQLAlchemy
 
 from hanzi_universe.hanzi import lookup, lookup_pinyin, get_category, ranks, INF
 from hanzi_universe.pinyin import decode_pinyin
@@ -7,6 +8,18 @@ from hanzi_universe.quiz import get_next_question, user_answer
 import random
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+
+class HanziPron(db.Model):
+    hanzi_pron = db.Column(db.Unicode(10), primary_key=True)
+    ok = db.Column(db.Integer)
+    ng = db.Column(db.Integer)
+
+    def __repr__(self):
+        return f'<HanziPron hanzi_pron={self.hanzi_pron}, ok={self.ok} ng={self.ng}>'
 
 
 @app.route('/hanzi/<string:hanzi>')
@@ -36,7 +49,8 @@ def make_json_response(data):
 
 @app.route('/get_next_question')
 def get_next_question_api():
-    data = get_next_question()
+    hanzi_pron_list = HanziPron.query.all()
+    data = get_next_question(hanzi_pron_list)
     return make_json_response(data)
 
 
@@ -45,7 +59,19 @@ def user_answer_api():
     res = request.get_json()
     question = res.get('question')
     answer = res.get('answer')
-    user_answer(question, answer)
+    for ok, hanzi, pron in user_answer(question, answer):
+        key = hanzi + '/' + pron
+        hanzi_pron = HanziPron.query.filter_by(
+            hanzi_pron=key).first()
+        if not hanzi_pron:
+            hanzi_pron = HanziPron(hanzi_pron=key, ok=0, ng=0)
+            db.session.add(hanzi_pron)
+        if ok:
+            hanzi_pron.ok += 1
+        else:
+            hanzi_pron.ng += 1
+        db.session.commit()
+
     return make_json_response('ok')
 
 

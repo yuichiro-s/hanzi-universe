@@ -3,7 +3,7 @@ let currentQuestion: {
     question: string,
     answer: string[],
     pinyin: string[],
-    pinyinOrig: string[],
+    pinyinNoTone: string[],
     defs: string[],
 } = null;
 let userInput = [];
@@ -67,24 +67,25 @@ async function nextQuestion() {
 
     let eHanzi = document.getElementById('hanzi');
     eHanzi.innerHTML = '';
-    for (let [c, rank] of currentQuestion.question) {
+    for (let [c, rank, cat] of currentQuestion.question) {
         let e = document.createElement('a');
         e.setAttribute('href', 'hanzi/' + c);
         e.innerText = c;
         e.classList.add('hanzi');
-        eHanzi.appendChild(e);
+        e.classList.add('category-' + cat);
         let eSub = document.createElement('sub');
         eSub.innerText = rank;
-        eHanzi.appendChild(eSub);
+        e.appendChild(eSub);
+        eHanzi.appendChild(e);
     }
     let ePinyin = document.getElementById('pinyin');
     ePinyin.innerHTML = '';
     for (let i = 0; i < currentQuestion.answer.length; i++) {
         let t = currentQuestion.answer[i];
         let p = currentQuestion.pinyin[i];
-        let pOrig = currentQuestion.pinyinOrig[i];
+        let pNoTone = currentQuestion.pinyinNoTone[i];
         let e = document.createElement('a');
-        e.setAttribute('href', 'pinyin/' + pOrig);
+        e.setAttribute('href', 'pinyin/' + pNoTone);
         e.innerText = p;
         e.classList.add('tone' + t);
         ePinyin.appendChild(e);
