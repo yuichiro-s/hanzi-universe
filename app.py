@@ -22,6 +22,11 @@ def get_pinyin(pinyin):
     return render_template('pinyin.html', obj=obj)
 
 
+@app.route('/quiz')
+def quiz():
+    return render_template('quiz.html')
+
+
 @app.route('/frequency')
 def show_frequency_list():
     lst = sorted(ranks.items(), key=lambda kv: kv[1] or INF)
