@@ -1,19 +1,24 @@
 from collections import defaultdict
 
-from hanzi_universe.loader import load_cedict, load_frequency, load_frequency_char, load_ids
+from hanzi_universe.loader import load_cedict, load_frequency, \
+    load_frequency_char, load_ids
 from hanzi_universe.pinyin import decode_pinyin
 
 word_freqs = load_frequency('data/frequency')
 ranks = load_frequency_char('data/frequency_char')
-cedict, pron_to_hanzi, traditional_to_simple, simple_to_traditional, hanzi_to_words = load_cedict(
+cedict, pron_to_hanzi, traditional_to_simple, simple_to_traditional, \
+hanzi_to_words = load_cedict(
     'data/cedict_ts.u8', word_freqs)
 hanzi_to_parts, part_to_hanzi = load_ids('data/cjkvi-ids/ids.txt', cedict)
 
 INF = float('inf')
 
+
 def zip_with_frequency(words, f, reverse=False):
     return sorted(
-        map(lambda w: (w, f[w]), words), key=lambda kv: kv[1] or INF, reverse=reverse)
+        map(lambda w: (w, f[w]), words),
+        key=lambda kv: kv[1] or INF,
+        reverse=reverse)
 
 
 def list_hanzi_with_pronuncitation(pron, max_rank):
@@ -83,7 +88,7 @@ def get_related_hanzi(hanzi, pron, max_rank):
                     level2[pron2].append((hanzi2, rank2))
 
     level1.sort(key=lambda e: e[1] or INF)
- 
+
     level2_list = []
     for pron2, hs in sorted(level2.items()):
         level2_list.append((pron2, sorted(hs, key=lambda e: e[1] or INF)))

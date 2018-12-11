@@ -1,5 +1,6 @@
 def get_next_question():
     print('Get next question.')
+
     return {
         'question': '你好',
         'answer': [3, 3],
